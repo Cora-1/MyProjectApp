@@ -9,6 +9,10 @@ interface ProfileData {
   first_name: string;
   last_name: string;
   avatar_url: string;
+  tone_score: number;
+  empathy_score: number;
+  clarity_score: number;
+  confidence_score: number;
 }
 
 const Dashboard = () => {
@@ -21,7 +25,7 @@ const Dashboard = () => {
       if (user) {
         const { data, error } = await supabase
           .from('profiles')
-          .select('first_name, last_name, avatar_url')
+          .select('first_name, last_name, avatar_url, tone_score, empathy_score, clarity_score, confidence_score')
           .eq('id', user.id)
           .single();
 
@@ -38,10 +42,10 @@ const Dashboard = () => {
   }, [user]);
 
   const stats = [
-    { name: "Tone", score: 75, description: "Your overall communication tone." },
-    { name: "Empathy", score: 82, description: "How well you connect with others' feelings." },
-    { name: "Clarity", score: 68, description: "The conciseness and understanding of your messages." },
-    { name: "Confidence", score: 90, description: "Your perceived self-assurance in communication." },
+    { name: "Tone", score: profile?.tone_score ?? 0, description: "Your overall communication tone." },
+    { name: "Empathy", score: profile?.empathy_score ?? 0, description: "How well you connect with others' feelings." },
+    { name: "Clarity", score: profile?.clarity_score ?? 0, description: "The conciseness and understanding of your messages." },
+    { name: "Confidence", score: profile?.confidence_score ?? 0, description: "Your perceived self-assurance in communication." },
   ];
 
   return (

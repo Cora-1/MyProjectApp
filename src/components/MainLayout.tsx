@@ -1,18 +1,17 @@
 import React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import NavigationMenuDropdown from "./NavigationMenuDropdown"; // Import the new component
 
 const MainLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, session } = useAuth();
-  const currentPath = location.pathname;
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -28,31 +27,11 @@ const MainLayout = () => {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
-          <h1 className="text-xl font-bold md:text-2xl">AI Leadership Platform</h1>
+          <div className="flex items-center gap-4">
+            <NavigationMenuDropdown /> {/* Use the new dropdown navigation */}
+            <h1 className="text-xl font-bold md:text-2xl">AI Leadership Platform</h1>
+          </div>
           <nav className="flex items-center space-x-2 lg:space-x-6">
-            {/* Added overflow-x-auto and whitespace-nowrap for mobile scrolling */}
-            <Tabs value={currentPath} className="overflow-x-auto whitespace-nowrap">
-              <TabsList className="flex"> {/* Ensure TabsList itself is a flex container */}
-                <TabsTrigger value="/">
-                  <Link to="/">Dashboard</Link>
-                </TabsTrigger>
-                <TabsTrigger value="/leadership-modules">
-                  <Link to="/leadership-modules">Leadership Modules</Link>
-                </TabsTrigger>
-                <TabsTrigger value="/messages">
-                  <Link to="/messages">My Feedback</Link>
-                </TabsTrigger>
-                <TabsTrigger value="/team-messages">
-                  <Link to="/team-messages">Team Messages</Link>
-                </TabsTrigger>
-                <TabsTrigger value="/feedback">
-                  <Link to="/feedback">Feedback History</Link>
-                </TabsTrigger>
-                <TabsTrigger value="/users">
-                  <Link to="/users">Users</Link>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

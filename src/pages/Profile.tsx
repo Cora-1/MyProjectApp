@@ -12,11 +12,12 @@ interface ProfileData {
   first_name: string;
   last_name: string;
   avatar_url: string;
+  email: string; // Added email to ProfileData
 }
 
 const Profile = () => {
   const { user, session } = useAuth();
-  const [profile, setProfile] = useState<ProfileData>({ first_name: '', last_name: '', avatar_url: '' });
+  const [profile, setProfile] = useState<ProfileData>({ first_name: '', last_name: '', avatar_url: '', email: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,13 +26,15 @@ const Profile = () => {
         setLoading(true);
         const { data, error } = await supabase
           .from('profiles')
-          .select('first_name, last_name, avatar_url')
+          .select('first_name, last_name, avatar_url, email') // Select email as well
           .eq('id', user.id)
           .single();
 
         if (error) {
           console.error('Error fetching profile:', error);
           toast.error('Failed to load profile.');
+          // Initialize with user's email if profile not found
+          setProfile({ first_name: '', last_name: '', avatar_url: '', email: user.email || '' });
         } else if (data) {
           setProfile(data);
         }
@@ -53,7 +56,12 @@ const Profile = () => {
     setLoading(true);
     const { error } = await supabase
       .from('profiles')
-      .update(profile)
+      .update({
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        avatar_url: profile.avatar_url,
+        // Email should not be updated directly from here, it's managed by auth.users
+      })
       .eq('id', user.id);
 
     if (error) {
@@ -81,11 +89,11 @@ const Profile = () => {
       <Card className="bg-card text-card-foreground border-border max-w-lg mx-auto">
         <CardHeader className="flex flex-col items-center">
           <Avatar className="h-24 w-24 mb-4">
-            <AvatarImage src={profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name || user?.email}`} alt={`${profile.first_name} ${profile.last_name}`} />
-            <AvatarFallback>{(profile.first_name?.[0] || '') + (profile.last_name?.[0] || '') || user?.email?.[0]}</AvatarFallback>
+            <AvatarImage src={profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name || profile.email}`} alt={`${profile.first_name} ${profile.last_name}`} />
+            <AvatarFallback>{(profile.first_name?.[0] || '') + (profile.last_name?.[0] || '') || profile.email?.[0]}</AvatarFallback>
           </Avatar>
           <CardTitle className="text-2xl">{profile.first_name} {profile.last_name}</CardTitle>
-          <p className="text-sm text-muted-foreground">{user?.email}</p>
+          <p className="text-sm text-muted-foreground">{profile.email}</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -99,6 +107,10 @@ const Profile = () => {
           <div>
             <Label htmlFor="avatar_url">Avatar URL</Label>
             <Input id="avatar_url" value={profile.avatar_url} onChange={handleInputChange} placeholder="e.g., https://example.com/my-avatar.jpg" className="bg-input text-foreground border-border" />
+          </div>
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" value={profile.email} disabled className="bg-input text-foreground border-border opacity-70" />
           </div>
         </CardContent>
         <CardFooter>

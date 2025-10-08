@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,7 +41,7 @@ const MainLayout = () => {
                 <TabsTrigger value="/messages">
                   <Link to="/messages">My Feedback</Link>
                 </TabsTrigger>
-                <TabsTrigger value="/team-messages"> {/* New tab for Team Messages */}
+                <TabsTrigger value="/team-messages">
                   <Link to="/team-messages">Team Messages</Link>
                 </TabsTrigger>
                 <TabsTrigger value="/feedback">
@@ -89,7 +88,6 @@ const MainLayout = () => {
       <main className="flex-1 container py-8">
         <Outlet />
       </main>
-      <MadeWithDyad />
     </div>
   );
 };

@@ -3,13 +3,16 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainLayout from "./components/MainLayout"; // Import the new layout
+import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import LeadershipModules from "./pages/LeadershipModules";
 import Messages from "./pages/Messages";
 import Feedback from "./pages/Feedback";
 import Users from "./pages/Users";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login"; // Import the Login page
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import Profile from "./pages/Profile"; // Import Profile page
 
 const queryClient = new QueryClient();
 
@@ -20,14 +23,17 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<MainLayout />}> {/* Use MainLayout as the parent route */}
-            <Route index element={<Dashboard />} /> {/* Default route for MainLayout */}
-            <Route path="leadership-modules" element={<LeadershipModules />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="feedback" element={<Feedback />} />
-            <Route path="users" element={<Users />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+          <Route path="/login" element={<Login />} /> {/* Login route */}
+          <Route element={<ProtectedRoute />}> {/* Protected routes */}
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="leadership-modules" element={<LeadershipModules />} />
+              <Route path="messages" element={<Messages />} />
+              <Route path="feedback" element={<Feedback />} />
+              <Route path="users" element={<Users />} />
+              <Route path="profile" element={<Profile />} /> {/* Profile route */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

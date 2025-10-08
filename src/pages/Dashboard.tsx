@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ScoreRadarChart from "@/components/ScoreRadarChart"; // Import the new chart component
 
 interface ProfileData {
   first_name: string;
@@ -88,6 +89,25 @@ const Dashboard = () => {
           </Card>
         ))}
       </div>
+
+      {/* New Card for Radar Chart */}
+      <Card className="bg-card text-card-foreground border-border p-6">
+        <CardHeader>
+          <CardTitle className="text-xl">Communication Score Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loadingProfile ? (
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>
+          ) : (
+            <ScoreRadarChart
+              tone={profile?.tone_score ?? 0}
+              empathy={profile?.empathy_score ?? 0}
+              clarity={profile?.clarity_score ?? 0}
+              confidence={profile?.confidence_score ?? 0}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

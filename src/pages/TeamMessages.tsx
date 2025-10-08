@@ -45,15 +45,14 @@ const TeamMessages = () => {
 
     setLoading(true);
     try {
-      const { data: acceptedInvites, error: acceptedInvitesError } = await supabase
+      const { data: allAcceptedInvites, error: acceptedInvitesError } = await supabase
         .from('team_invitations')
         .select(`
           id,
           sender_id,
           receiver_email,
           status,
-          created_at,
-          sender_profile:sender_id(id, first_name, last_name, avatar_url, email)
+          created_at
         `)
         .eq('status', 'accepted')
         .or(`sender_id.eq.${user.id},receiver_email.eq.${user.email}`);
@@ -63,29 +62,31 @@ const TeamMessages = () => {
       const teammateIds = new Set<string>();
       const fetchedTeammates: UserProfile[] = [];
 
-      for (const invite of acceptedInvites) {
+      for (const invite of allAcceptedInvites) {
+        let teammateProfile: UserProfile | null = null;
         if (invite.sender_id === user.id) {
-          const { data: receiverProfile, error: receiverProfileError } = await supabase
+          // Current user is sender, receiver_email is the teammate
+          const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('id, first_name, last_name, avatar_url, email')
             .eq('email', invite.receiver_email)
             .single();
-          if (receiverProfileError && receiverProfileError.code !== 'PGRST116') throw receiverProfileError;
-          if (receiverProfile && !teammateIds.has(receiverProfile.id)) {
-            fetchedTeammates.push(receiverProfile);
-            teammateIds.add(receiverProfile.id);
-          }
+          if (profileError && profileError.code !== 'PGRST116') throw profileError;
+          teammateProfile = profileData;
         } else if (invite.receiver_email === user.email) {
-          if (invite.sender_profile && !teammateIds.has(invite.sender_profile.id)) {
-            fetchedTeammates.push({
-              id: invite.sender_profile.id,
-              first_name: invite.sender_profile.first_name,
-              last_name: invite.sender_profile.last_name,
-              avatar_url: invite.sender_profile.avatar_url,
-              email: invite.sender_profile.email,
-            });
-            teammateIds.add(invite.sender_profile.id);
-          }
+          // Current user is receiver, sender_id is the teammate
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name, avatar_url, email')
+            .eq('id', invite.sender_id)
+            .single();
+          if (profileError && profileError.code !== 'PGRST116') throw profileError;
+          teammateProfile = profileData;
+        }
+
+        if (teammateProfile && !teammateIds.has(teammateProfile.id)) {
+          fetchedTeammates.push(teammateProfile);
+          teammateIds.add(teammateProfile.id);
         }
       }
       setTeammates(fetchedTeammates);

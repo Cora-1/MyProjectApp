@@ -34,41 +34,52 @@ const InviteTeammateDialog: React.FC<InviteTeammateDialogProps> = ({ isOpen, onC
 
     setLoading(true);
     try {
-      // Check if an invitation already exists or if the user is already a teammate
-      const { data: existingInvites, error: existingInvitesError } = await supabase
-        .from('team_invitations')
-        .select('id, status')
-        .or(`and(sender_id.eq.${user.id},receiver_email.eq.${receiverEmail}),and(sender_id.eq.(select id from auth.users where email='${receiverEmail}'),receiver_email.eq.${user.email})`);
+      // Check if receiverEmail is an existing user in profiles
+      const { data: existingReceiverProfile, error: receiverProfileError } = await supabase
+        .from('profiles')
+        .select('id, email')
+        .eq('email', receiverEmail)
+        .single();
 
-      if (existingInvitesError) throw existingInvitesError;
+      if (receiverProfileError && receiverProfileError.code !== 'PGRST116') { // PGRST116 means no rows found
+        throw receiverProfileError;
+      }
 
-      if (existingInvites && existingInvites.length > 0) {
-        const hasPending = existingInvites.some(invite => invite.status === 'pending');
-        const hasAccepted = existingInvites.some(invite => invite.status === 'accepted');
+      const receiverId = existingReceiverProfile?.id;
 
-        if (hasAccepted) {
+      // Check for existing ACCEPTED invitations (teammates)
+      if (receiverId) {
+        const { data: acceptedTeammateCheck, error: acceptedCheckError } = await supabase
+          .from('team_invitations')
+          .select('id')
+          .eq('status', 'accepted')
+          .or(`and(sender_id.eq.${user.id},receiver_email.eq.${receiverEmail}),and(sender_id.eq.${receiverId},receiver_email.eq.${user.email})`);
+
+        if (acceptedCheckError) throw acceptedCheckError;
+
+        if (acceptedTeammateCheck && acceptedTeammateCheck.length > 0) {
           toast.info(`${receiverEmail} is already your teammate.`);
           onClose();
           return;
         }
-        if (hasPending) {
-          toast.info(`An invitation to ${receiverEmail} is already pending.`);
-          onClose();
-          return;
-        }
       }
 
-      // Check if the receiver email exists as a user in auth.users
-      const { data: receiverUser, error: receiverUserError } = await supabase
-        .from('profiles') // Using profiles table to check for existing users
+      // Check for existing PENDING invitations (in either direction)
+      const { data: pendingInviteCheck, error: pendingCheckError } = await supabase
+        .from('team_invitations')
         .select('id')
-        .eq('email', receiverEmail)
-        .single();
+        .eq('status', 'pending')
+        .or(`and(sender_id.eq.${user.id},receiver_email.eq.${receiverEmail}),and(sender_id.eq.${receiverId || 'null'},receiver_email.eq.${user.email})`);
 
-      if (receiverUserError && receiverUserError.code !== 'PGRST116') { // PGRST116 means no rows found
-        throw receiverUserError;
+      if (pendingCheckError) throw pendingCheckError;
+
+      if (pendingInviteCheck && pendingInviteCheck.length > 0) {
+        toast.info(`An invitation to ${receiverEmail} is already pending.`);
+        onClose();
+        return;
       }
 
+      // If all checks pass, insert new invitation
       const { error: insertError } = await supabase
         .from('team_invitations')
         .insert({

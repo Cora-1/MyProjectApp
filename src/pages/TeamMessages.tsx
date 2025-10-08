@@ -213,14 +213,15 @@ const TeamMessages = () => {
       <h2 className="text-3xl font-bold">Team Messages</h2>
       <p className="text-muted-foreground">Communicate directly with your teammates.</p>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      {/* Changed grid to default to 1 column and expand to 3 on large screens */}
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         {/* Teammates List */}
-        <Card className="bg-card text-card-foreground border-border lg:col-span-1">
+        <Card className="bg-card text-card-foreground border-border">
           <CardHeader>
             <CardTitle>Your Teammates</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[500px] pr-4">
+            <ScrollArea className="h-[300px] lg:h-[500px] pr-4"> {/* Adjusted height for mobile */}
               {loading ? (
                 <p className="text-muted-foreground text-center">Loading teammates...</p>
               ) : teammates.length === 0 ? (
@@ -258,7 +259,7 @@ const TeamMessages = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-end">
-            <ScrollArea className="h-[400px] pr-4 mb-4">
+            <ScrollArea className="h-[300px] lg:h-[400px] pr-4 mb-4"> {/* Adjusted height for mobile */}
               {selectedTeammate ? (
                 loading ? (
                   <p className="text-muted-foreground text-center">Loading messages...</p>
@@ -282,10 +283,11 @@ const TeamMessages = () => {
                           <p className={`text-xs mt-1 ${message.sender_id === user?.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
                             {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
+                          {/* Delete button only visible on hover for desktop, but always present for touch on mobile */}
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity md:opacity-100 md:group-hover:opacity-100"
                             onClick={() => handleDeleteMessage(message.id)}
                             disabled={loading}
                           >

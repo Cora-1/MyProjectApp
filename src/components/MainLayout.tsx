@@ -28,10 +28,11 @@ const MainLayout = () => {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
-          <h1 className="text-2xl font-bold">AI Leadership Platform</h1>
-          <nav className="flex items-center space-x-4 lg:space-x-6">
-            <Tabs value={currentPath}>
-              <TabsList>
+          <h1 className="text-xl font-bold md:text-2xl">AI Leadership Platform</h1>
+          <nav className="flex items-center space-x-2 lg:space-x-6">
+            {/* Added overflow-x-auto and whitespace-nowrap for mobile scrolling */}
+            <Tabs value={currentPath} className="overflow-x-auto whitespace-nowrap">
+              <TabsList className="flex"> {/* Ensure TabsList itself is a flex container */}
                 <TabsTrigger value="/">
                   <Link to="/">Dashboard</Link>
                 </TabsTrigger>

@@ -6,8 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import LeadershipModules from "./pages/LeadershipModules";
-import ModuleLesson from "./pages/ModuleLesson"; // Import the new ModuleLesson page
+import ModuleLesson from "./pages/ModuleLesson";
 import Messages from "./pages/Messages";
+import TeamMessages from "./pages/TeamMessages"; // Import the new TeamMessages page
 import Feedback from "./pages/Feedback";
 import Users from "./pages/Users";
 import NotFound from "./pages/NotFound";
@@ -29,8 +30,9 @@ const App = () => (
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="leadership-modules" element={<LeadershipModules />} />
-              <Route path="leadership-modules/:moduleId" element={<ModuleLesson />} /> {/* New route for lessons */}
+              <Route path="leadership-modules/:moduleId" element={<ModuleLesson />} />
               <Route path="messages" element={<Messages />} />
+              <Route path="team-messages" element={<TeamMessages />} /> {/* New route for Team Messages */}
               <Route path="feedback" element={<Feedback />} />
               <Route path="users" element={<Users />} />
               <Route path="profile" element={<Profile />} />

@@ -40,10 +40,13 @@ const MainLayout = () => {
                   <Link to="/leadership-modules">Leadership Modules</Link>
                 </TabsTrigger>
                 <TabsTrigger value="/messages">
-                  <Link to="/messages">Messages</Link>
+                  <Link to="/messages">My Feedback</Link>
+                </TabsTrigger>
+                <TabsTrigger value="/team-messages"> {/* New tab for Team Messages */}
+                  <Link to="/team-messages">Team Messages</Link>
                 </TabsTrigger>
                 <TabsTrigger value="/feedback">
-                  <Link to="/feedback">Feedback</Link>
+                  <Link to="/feedback">Feedback History</Link>
                 </TabsTrigger>
                 <TabsTrigger value="/users">
                   <Link to="/users">Users</Link>

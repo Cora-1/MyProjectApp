@@ -6,13 +6,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import LeadershipModules from "./pages/LeadershipModules";
+import ModuleLesson from "./pages/ModuleLesson"; // Import the new ModuleLesson page
 import Messages from "./pages/Messages";
 import Feedback from "./pages/Feedback";
 import Users from "./pages/Users";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login"; // Import the Login page
-import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
-import Profile from "./pages/Profile"; // Import Profile page
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -23,15 +24,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} /> {/* Login route */}
-          <Route element={<ProtectedRoute />}> {/* Protected routes */}
+          <Route path="/login" element={<Login />} />
+          <Route element={<ProtectedRoute />}>
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="leadership-modules" element={<LeadershipModules />} />
+              <Route path="leadership-modules/:moduleId" element={<ModuleLesson />} /> {/* New route for lessons */}
               <Route path="messages" element={<Messages />} />
               <Route path="feedback" element={<Feedback />} />
               <Route path="users" element={<Users />} />
-              <Route path="profile" element={<Profile />} /> {/* Profile route */}
+              <Route path="profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

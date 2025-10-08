@@ -63,7 +63,6 @@ const ModuleLesson = () => {
         </Link>
       </div>
     );
-  );
   }
 
   return (
